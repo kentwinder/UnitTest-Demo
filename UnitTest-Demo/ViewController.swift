@@ -20,9 +20,14 @@ class ViewController: UIViewController {
     @IBOutlet weak var detailsLabel: UILabel!
     
     var weatherService: WeatherServiceProtocol = WeatherService()
+    var imageService: ImageServiceProtocol = ImageService()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        getCurrentWeather()
+    }
+    
+    @IBAction func refreshData(_ sender: Any) {
         getCurrentWeather()
     }
     
@@ -32,12 +37,8 @@ class ViewController: UIViewController {
                 self?.showCurrentWeatherDetails(data: response)
             }
         }) { error in
-            print("Error: \(error.localizedDescription)")
+            debugPrint("Error: \(error.localizedDescription)")
         }
-    }
-    
-    @IBAction func refreshData(_ sender: Any) {
-        getCurrentWeather()
     }
     
     func showCurrentWeatherDetails(data: GraphCurrentWeatherResponse) {
@@ -47,7 +48,13 @@ class ViewController: UIViewController {
             self.temperatureLabel.text = "\(temperature)°"
         }
         if let iconUrl = data.current?.condition?.icon, !iconUrl.isEmpty {
-            self.getIcon(urlString: "https:\(iconUrl)")
+            imageService.downloadImage(fromUrl: "https:\(iconUrl)", completion: { [weak self] (image) in
+                DispatchQueue.main.async() {
+                    self?.imageView.image = image
+                }
+            }, failure: { (errorMessage) in
+                debugPrint("Can not download image, error: \(errorMessage)")
+            })
         }
         
         var details = ""
@@ -76,30 +83,6 @@ class ViewController: UIViewController {
             details.append("Visibility: \(visibility) km\n")
         }
         self.detailsLabel.text = details
-    }
-    
-    func getIcon(urlString: String) {
-        let url = URL(string: urlString)!
-        let session = URLSession(configuration: .default)
-        
-        let dataTask = session.dataTask(with: url) { [weak self] (data, response, error) in
-            if let _ = error {
-                print("Error when downloading the image: \(error)")
-            } else {
-                if let _ = response as? HTTPURLResponse {
-                    if let imageData = data {
-                        DispatchQueue.main.async(){
-                            self?.imageView.image = UIImage(data: imageData)
-                        }
-                    } else {
-                        print("Could not get the image")
-                    }
-                } else {
-                    print("Could not download the image")
-                }
-            }
-        }
-        dataTask.resume()
     }
 }
 

@@ -7,15 +7,20 @@
 //
 
 import Foundation
-import Gloss
 
-struct GraphCurrentWeatherResponse: Decodable {
+class GraphCurrentWeatherResponse: NSObject {
+    var location: GraphLocation?
+    var current: GraphCurrent?
     
-    let location: GraphLocation?
-    let current: GraphCurrent?
-    
-    init?(json: JSON) {
-        self.location = "location" <~~ json
-        self.current = "current" <~~ json
+    init(withDictionary dict: AnyObject) {
+        if let dict = dict as? [String: AnyObject] {
+            if let location = dict["location"] {
+                self.location = GraphLocation(withDictionary: location)
+            }
+            
+            if let current = dict["current"] {
+                self.current = GraphCurrent(withDictionary: current)
+            }
+        }
     }
 }

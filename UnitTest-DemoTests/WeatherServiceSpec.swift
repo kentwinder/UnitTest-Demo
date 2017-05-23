@@ -11,14 +11,11 @@
 import Quick
 import Nimble
 import Mockingjay
-import Alamofire
-import Gloss
 
 class WeatherServiceSpec: QuickSpec {
     
     override func spec() {
         describe("WeatherService") {
-            let service = WeatherService()
             let city = "Bangkok"
             var url: String?
             
@@ -27,11 +24,10 @@ class WeatherServiceSpec: QuickSpec {
                 beforeEach {
                     super.setUp()
                     
-                    url = "\(service.apiUrl)\(city)"
-                    
+                    url = Constants.apiUrl(forCity: city)
                     let path = Bundle(for: type(of: self)).path(forResource: "BangkokCurrentWeather", ofType: "json")!
                     let data = NSData(contentsOfFile: path)!
-                    self.stub(uri(url!), jsonData(data as Data))
+                    MockingjayProtocol.addStub(matcher: uri(url!), builder: jsonData(data as Data))
                 }
                 
                 context("success") {
@@ -46,8 +42,8 @@ class WeatherServiceSpec: QuickSpec {
                         })
                     }
                     
-                    it("last updated time should be 2017-03-31 17:00") {
-                        expect(successResponse?.current?.lastUpdated).toEventually(equal("2017-03-31 17:00"))
+                    it("should contain details for current weather in Bangkok") {
+                        expect(successResponse).toEventuallyNot(beNil())
                     }
                 }
             }

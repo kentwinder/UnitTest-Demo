@@ -53,14 +53,6 @@ class ViewControllerSpec: QuickSpec {
             it("make a request to get current weather details") {
                 expect(weatherService.getCurrentWeatherCalled).to(beTrue())
             }
-            
-//            describe("when the request succeeds") {
-//
-//            }
-//            
-//            describe("when the request fails") {
-//                
-//            }
         }
     }
 }

@@ -7,17 +7,17 @@
 //
 
 import Foundation
-import Gloss
 
-struct GraphLocation: Decodable {
+class GraphLocation: NSObject {
+    var name: String?
+    var country: String?
+    var localtime: String?
     
-    let name: String?
-    let country: String?
-    let localTime: String?
-    
-    init?(json: JSON) {
-        self.name = "name" <~~ json
-        self.country = "country" <~~ json
-        self.localTime = "localtime" <~~ json
+    init(withDictionary dict: AnyObject) {
+        if let dict = dict as? [String: AnyObject] {
+            self.name = dict["name"] as? String
+            self.country = dict["country"] as? String
+            self.localtime = dict["localtime"] as? String
+        }
     }
 }

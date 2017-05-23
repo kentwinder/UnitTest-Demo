@@ -7,17 +7,17 @@
 //
 
 import Foundation
-import Gloss
 
-struct GraphCondition: Decodable {
+class GraphCondition: NSObject {
+    var text: String?
+    var icon: String?
+    var code: Int?
     
-    let text: String?
-    let icon: String?
-    let code: Int?
-    
-    init?(json: JSON) {
-        self.text = "text" <~~ json
-        self.icon = "icon" <~~ json
-        self.code = "code" <~~ json
+    init(withDictionary dict: AnyObject) {
+        if let dict = dict as? [String: AnyObject] {
+            self.text = dict["text"] as? String
+            self.icon = dict["icon"] as? String
+            self.code = dict["code"] as? Int
+        }
     }
 }
