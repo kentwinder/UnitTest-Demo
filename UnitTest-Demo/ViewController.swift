@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import Alamofire
 
 class ViewController: UIViewController {
     public static let Identifier = "ViewControllerIdentifier"
